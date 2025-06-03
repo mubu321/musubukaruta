@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>クリエイターかるた - 配信者あるある50音</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Kaku Gothic Pro', 'ヒラギノ角ゴ Pro', 'Yu Gothic Medium', '游ゴシック Medium', YuGothic, '游ゴシック体', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.8;
+        }
+
+        .karuta-container {
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .karuta-card {
+            width: 280px;
+            height: 420px;
+            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            border: 3px solid #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            transform-style: preserve-3d;
+            position: relative;
+        }
+
+        .karuta-card:hover {
+            transform: translateY(-5px) rotateX(5deg);
+            box-shadow: 0 20px 45px rgba(0,0,0,0.4);
+        }
+
+        .karuta-card::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
+        .karuta-letter {
+            font-size: 4.5em;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            font-family: serif;
+        }
+
+        .karuta-text {
+            font-size: 1.3em;
+            line-height: 1.5;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .controls {
+            margin-top: 40px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255,255,255,0.9);
+            color: #2c3e50;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .nav-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .counter {
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            min-width: 80px;
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .shuffle-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            background: #e74c3c;
+            color: white;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .shuffle-btn:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+
+        .card-enter {
+            animation: cardEnter 0.6s ease forwards;
+        }
+
+        @keyframes cardEnter {
+            from {
+                opacity: 0;
+                transform: translateY(30px) rotateY(15deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateY(0deg);
+            }
+        }
+
+        .card-exit {
+            animation: cardExit 0.4s ease forwards;
+        }
+
+        @keyframes cardExit {
+            from {
+                opacity: 1;
+                transform: scale(1) rotateY(0deg);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.8) rotateY(-15deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .karuta-card {
+                width: 250px;
+                height: 375px;
+                padding: 25px 15px;
+            }
+            
+            .karuta-letter {
+                font-size: 3.5em;
+                margin-bottom: 20px;
+            }
+            
+            .karuta-text {
+                font-size: 1.1em;
+            }
+            
+            .controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-btn {
+                min-width: 100px;
+                padding: 12px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎴 クリエイターかるた</h1>
+        <p>配信者・YouTuberあるある50音</p>
+    </div>
+
+    <div class="karuta-container">
+        <div class="karuta-card card-enter" id="karutaCard">
+            <div class="karuta-letter" id="karutaLetter">あ</div>
+            <div class="karuta-text" id="karutaText">あらわれた！自称"神"のしゃべりすぎ</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn" onclick="previousCard()">← 前へ</button>
+        <div class="counter">
+            <span id="currentNum">1</span> / <span id="totalNum">46</span>
+        </div>
+        <button class="nav-btn" id="nextBtn" onclick="nextCard()">次へ →</button>
+    </div>
+
+    <button class="shuffle-btn" onclick="shuffleCards()">🔀 シャッフル</button>
+
+    <script>
+        const karutaData = [
+            {letter: 'あ', text: '「あああああ！！！！ッすう....！！！！」'},
+            {letter: 'い', text: '「いいから黙って見ろ！」'},
+            {letter: 'う', text: '「うわああああ！」'},
+            {letter: 'え', text: '「絵本だ。お前はグリム童話見とけ。」'},
+            {letter: 'お', text: '「お前はもう呪われている！！！！！」'},
+            {letter: 'か', text: '「カメラ回ってるの忘れて暴走！！！！」'},
+            {letter: 'き', text: '「キリンの頭突きを食らいなさい。」'},
+            {letter: 'く', text: '「くそすぎたのか...?」'},
+            {letter: 'け', text: '「消してやる！！！あんたをすべての次元から。」'},
+            {letter: 'こ', text: '「これがむすぶクオリティ！！！！！これぞプロの手抜き編集だ☆」'},
+            {letter: 'さ', text: '「さあ、次は何が飛び出す？w」'},
+            {letter: 'し', text: '「死ぬほど笑ったら死ぬかも」'},
+            {letter: 'す', text: '「酢飯が許されるのは寿司だけだ！！！！」'},
+            {letter: 'せ', text: '「セリフの意味？？知らん！！！！」'},
+            {letter: 'そ', text: '「そーん！！！！！」'},
+            {letter: 'た', text: '「ただのいえじゃねえかァ！！！！」'},
+            {letter: 'ち', text: '「知恵70％バカ30％、まさに俺はレモンスカッシュだァ！！！！」'},
+            {letter: 'つ', text: '「ツッコミ不在のカオス。」'},
+            {letter: 'て', text: '「てんやわんやの大騒ぎ。」'},
+            {letter: 'と', text: '「トラウマ回参上！！！！」'},
+            {letter: 'な', text: '「ナンデこんなに面白いの？このくそ動画は?」'},
+            {letter: 'に', text: '「にやけが止まらない。なぜ？？？」'},
+            {letter: 'ぬ', text: '「抜け出せない中毒ループ」'},
+            {letter: 'ね', text: '「寝不足確定、だが見る！」'},
+            {letter: 'の', text: '「ノリが完全におかしい」'},
+            {letter: 'は', text: '「ハチャメチャだけど妙に説得力」'},
+            {letter: 'ひ', text: '「ヒトじゃねぇ、神だ！フェハハ！！！！！ヂュフ！！！！」'},
+            {letter: 'ふ', text: '「不安と笑いが同時に襲う」'},
+            {letter: 'へ', text: '「偏差値MAX、愛される。」'},
+            {letter: 'ほ', text: '「ホントにやばい奴10秒前」'},
+            {letter: 'ま', text: '「マジで何が起きてるのか分からん」'},
+            {letter: 'み', text: '「見るな！でも見たい！」'},
+            {letter: 'む', text: '「むすぶ降臨、狂気の祭典！！！！」'},
+            {letter: 'め', text: '「メンタル爆破注意！」'},
+            {letter: 'も', text: '「モニターが壊れそうなエネルギーを今、ここで生成している！！！！」'},
+            {letter: 'や', text: '「ヤバすぎて言葉が出ない」'},
+            {letter: 'ゆ', text: '「ユーモアの皮をかぶった狂気desu☆」'},
+            {letter: 'よ', text: '「夜中の再生は地獄」'},
+            {letter: 'ら', text: '「ラリってるのか？違います。毎日回っているのだw！！！！！！」'},
+            {letter: 'り', text: '「理解不能、でも笑いが止まらん！！！！」'},
+            {letter: 'る', text: '「ルール無視の自由すぎる世界、むすぶワールド！！！」'},
+            {letter: 'れ', text: '「レベル違いの狂気。お前とは。」'},
+            {letter: 'ろ', text: '「ロケット謝って爆発寸前。お前のせいにします。」'},
+            {letter: 'わ', text: '「わけわからんけどクセ！！！」'},
+            {letter: 'を', text: '「を(お)い！お前のせいで死亡確定しただろうが！！！」'},
+            {letter: 'ん', text: '「ん？もう何が何だか分からん！！！！」'}
+        ];
+
+        let currentIndex = 0;
+        let currentDeck = [...karutaData];
+
+        function updateCard() {
+            const card = document.getElementById('karutaCard');
+            const letter = document.getElementById('karutaLetter');
+            const text = document.getElementById('karutaText');
+            const currentNum = document.getElementById('currentNum');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            // カード切り替えアニメーション
+            card.classList.add('card-exit');
+            
+            setTimeout(() => {
+                letter.textContent = currentDeck[currentIndex].letter;
+                text.textContent = currentDeck[currentIndex].text;
+                currentNum.textContent = currentIndex + 1;
+                
+                card.classList.remove('card-exit');
+                card.classList.add('card-enter');
+                
+                // ボタンの状態更新
+                prevBtn.disabled = currentIndex === 0;
+                nextBtn.disabled = currentIndex === currentDeck.length - 1;
+                
+                setTimeout(() => {
+                    card.classList.remove('card-enter');
+                }, 600);
+            }, 200);
+        }
+
+        function nextCard() {
+            if (currentIndex < currentDeck.length - 1) {
+                currentIndex++;
+                updateCard();
+            }
+        }
+
+        function previousCard() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateCard();
+            }
+        }
+
+        function shuffleCards() {
+            currentDeck = [...karutaData].sort(() => Math.random() - 0.5);
+            currentIndex = 0;
+            updateCard();
+        }
+
+        // キーボード操作
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextCard();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                previousCard();
+            } else if (e.key === 's' || e.key === 'S') {
+                shuffleCards();
+            }
+        });
+
+        // 初期化
+        document.getElementById('totalNum').textContent = karutaData.length;
+        updateCard();
+    </script>
+</body>
+</html>
